@@ -4,6 +4,8 @@
 <meta charset="UTF-8">
 <title>Cord BOT :: HackerWars</title>
 
+
+
 <style>
 body {
     margin: 0;
@@ -25,13 +27,9 @@ body {
     position: relative;
 }
 
-h1 {
-    margin: 0 0 10px;
-}
+h1 { margin: 0 0 10px; }
 
-.stat {
-    margin: 4px 0;
-}
+.stat { margin: 4px 0; }
 
 button {
     background: black;
@@ -57,9 +55,7 @@ button:hover {
     font-size: 13px;
 }
 
-.glitch {
-    animation: glitch 0.2s;
-}
+.glitch { animation: glitch 0.2s; }
 
 @keyframes glitch {
     0% { transform: translate(0,0); }
@@ -82,17 +78,17 @@ button:hover {
     <div class="stat"> Serveurs dominés : <span id="servers">0</span></div>
     <div class="stat"> Phase : <span id="phase">1</span></div>
 
-
-    <button onclick="hack()">▶ Exécuter hack()</button><br>
-    <button onclick="buyCPU()">＋ Acheter processeur (20 RAM)</button><br>
-    <button onclick="buyRAM()">＋ Étendre RAM (10 scripts)</button><br>
-    <button onclick="toggleAuto()"> Mode AUTO</button><br>
-    <button onclick="attackServer()" id="serverBtn" style="display:none">
-         Pirater serveur (50 scripts)
+    <button id="hackBtn">▶ Exécuter hack()</button><br>
+    <button id="cpuBtn">＋ Acheter processeur (20 RAM)</button><br>
+    <button id="ramBtn">＋ Étendre RAM (10 scripts)</button><br>
+    <button id="autoBtn"> Mode AUTO</button><br>
+    <button id="serverBtn" style="display:none">
+        Pirater serveur (50 scripts)
     </button>
 
     <div id="log"></div>
 </div>
+
 
 <script>
 let scripts = 0;
@@ -100,32 +96,30 @@ let ram = 100;
 let cpu = 0;
 let servers = 0;
 let phase = 1;
-
 let autoMode = false;
 
+
 const el = id => document.getElementById(id);
+const terminal = el("terminal");
 const logEl = el("log");
 
 function log(msg) {
     logEl.innerHTML += "> " + msg + "<br>";
     logEl.scrollTop = logEl.scrollHeight;
-    document.getElementById("terminal").classList.add("glitch");
-    setTimeout(()=>terminal.classList.remove("glitch"),100);
+    terminal.classList.add("glitch");
+    setTimeout(() => terminal.classList.remove("glitch"), 100);
 }
 
 function update() {
     el("scripts").textContent = Math.floor(scripts);
-    el("ram").textContent = ram;
+    el("ram").textContent = Math.floor(ram);
     el("cpu").textContent = cpu;
     el("servers").textContent = servers;
     el("phase").textContent = phase;
 }
 
 function hack() {
-    if (ram <= 0) {
-        log("ERREUR :: RAM saturée.");
-        return;
-    }
+    if (ram <= 0) return log("ERREUR :: RAM saturée.");
     scripts += 1 + cpu * 0.5;
     ram -= 1;
     log("Injection de script réussie.");
@@ -165,7 +159,6 @@ function attackServer() {
     } else log("Scripts insuffisants.");
 }
 
-// ===== PHASES =====
 function unlockPhase2() {
     phase = 2;
     log("PHASE 2 DÉBLOQUÉE :: Domination réseau.");
@@ -177,30 +170,48 @@ function unlockPhase3() {
     log("PHASE 3 :: AUTO-CONSCIENCE ÉMERGENTE.");
 }
 
-// ===== TICKS =====
+/* === EVENTS CSP SAFE === */
+el("hackBtn").addEventListener("click", hack);
+el("cpuBtn").addEventListener("click", buyCPU);
+el("ramBtn").addEventListener("click", buyRAM);
+el("autoBtn").addEventListener("click", toggleAuto);
+el("serverBtn").addEventListener("click", attackServer);
+
+/* === TICK === */
 setInterval(() => {
-    // Autofarm CPU
     if (cpu > 0 && ram > 0) {
         scripts += cpu * 0.3;
         ram -= cpu * 0.2;
     }
 
-    // Auto mode
     if (autoMode && ram > 0) hack();
-
-    // Phase unlock
     if (scripts >= 30 && phase === 1) unlockPhase2();
 
     update();
 }, 1000);
 
-// INIT
+
+
+/* === RAM DE SECOURS === */
+setInterval(() => {
+    if (ram <= 0) {
+        ram = 10;
+        scripts -= 10;
+        log("SÉCURITÉ :: 1 RAM d'urgence allouée.");
+        update();
+    }
+}, 10000);
+
+
+/* INIT */
 log("Système Cord BOT initialisé.");
 log("RAM disponible.");
 log("En attente de commandes...");
 update();
+
 </script>
+
+
 
 </body>
 </html>
-
