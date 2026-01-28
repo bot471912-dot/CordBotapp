@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<title>Cord BOT :: HackerWars</title>
+
+<style>
+body {
+    margin: 0;
+    background: black;
+    color: #00ff9c;
+    font-family: monospace;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#terminal {
+    width: 1000px;
+    height: 550px;
+    border: 2px solid #00ff9c;
+    padding: 15px;
+    box-shadow: 0 0 25px #00ff9c;
+    position: relative;
+}
+
+h1 {
+    margin: 0 0 10px;
+}
+
+.stat {
+    margin: 4px 0;
+}
+
+button {
+    background: black;
+    color: #00ff9c;
+    border: 1px solid #00ff9c;
+    padding: 6px 10px;
+    margin: 3px 0;
+    cursor: pointer;
+    font-family: monospace;
+}
+
+button:hover {
+    background: #00ff9c;
+    color: black;
+}
+
+#log {
+    margin-top: 10px;
+    height: 200px;
+    overflow-y: auto;
+    border: 1px solid #00ff9c;
+    padding: 5px;
+    font-size: 13px;
+}
+
+.glitch {
+    animation: glitch 0.2s;
+}
+
+@keyframes glitch {
+    0% { transform: translate(0,0); }
+    25% { transform: translate(-2px,1px); }
+    50% { transform: translate(2px,-1px); }
+    75% { transform: translate(-1px,2px); }
+    100% { transform: translate(0,0); }
+}
+</style>
+</head>
+
+<body>
+
+<div id="terminal">
+    <h1> CORD BOT — Hacker wars </h1>
+
+    <div class="stat"> Scripts : <span id="scripts">0</span></div>
+    <div class="stat"> RAM libre : <span id="ram">100</span></div>
+    <div class="stat"> Processeurs : <span id="cpu">0</span></div>
+    <div class="stat"> Serveurs dominés : <span id="servers">0</span></div>
+    <div class="stat"> Phase : <span id="phase">1</span></div>
+
+
+    <button onclick="hack()">▶ Exécuter hack()</button><br>
+    <button onclick="buyCPU()">＋ Acheter processeur (20 RAM)</button><br>
+    <button onclick="buyRAM()">＋ Étendre RAM (10 scripts)</button><br>
+    <button onclick="toggleAuto()"> Mode AUTO</button><br>
+    <button onclick="attackServer()" id="serverBtn" style="display:none">
+         Pirater serveur (50 scripts)
+    </button>
+
+    <div id="log"></div>
+</div>
+
+<script>
+let scripts = 0;
+let ram = 100;
+let cpu = 0;
+let servers = 0;
+let phase = 1;
+
+let autoMode = false;
+
+const el = id => document.getElementById(id);
+const logEl = el("log");
+
+function log(msg) {
+    logEl.innerHTML += "> " + msg + "<br>";
+    logEl.scrollTop = logEl.scrollHeight;
+    document.getElementById("terminal").classList.add("glitch");
+    setTimeout(()=>terminal.classList.remove("glitch"),100);
+}
+
+function update() {
+    el("scripts").textContent = Math.floor(scripts);
+    el("ram").textContent = ram;
+    el("cpu").textContent = cpu;
+    el("servers").textContent = servers;
+    el("phase").textContent = phase;
+}
+
+function hack() {
+    if (ram <= 0) {
+        log("ERREUR :: RAM saturée.");
+        return;
+    }
+    scripts += 1 + cpu * 0.5;
+    ram -= 1;
+    log("Injection de script réussie.");
+    update();
+}
+
+function buyCPU() {
+    if (ram >= 20) {
+        ram -= 20;
+        cpu++;
+        log("Processeur virtuel déployé.");
+        update();
+    } else log("RAM insuffisante.");
+}
+
+function buyRAM() {
+    if (scripts >= 10) {
+        scripts -= 10;
+        ram += 20;
+        log("Extension mémoire installée.");
+        update();
+    } else log("Scripts insuffisants.");
+}
+
+function toggleAuto() {
+    autoMode = !autoMode;
+    log(autoMode ? "MODE AUTO ACTIVÉ." : "MODE AUTO DÉSACTIVÉ.");
+}
+
+function attackServer() {
+    if (scripts >= 50) {
+        scripts -= 50;
+        servers++;
+        log("Serveur compromis.");
+        if (servers >= 3) unlockPhase3();
+        update();
+    } else log("Scripts insuffisants.");
+}
+
+// ===== PHASES =====
+function unlockPhase2() {
+    phase = 2;
+    log("PHASE 2 DÉBLOQUÉE :: Domination réseau.");
+    el("serverBtn").style.display = "inline-block";
+}
+
+function unlockPhase3() {
+    phase = 3;
+    log("PHASE 3 :: AUTO-CONSCIENCE ÉMERGENTE.");
+}
+
+// ===== TICKS =====
+setInterval(() => {
+    // Autofarm CPU
+    if (cpu > 0 && ram > 0) {
+        scripts += cpu * 0.3;
+        ram -= cpu * 0.2;
+    }
+
+    // Auto mode
+    if (autoMode && ram > 0) hack();
+
+    // Phase unlock
+    if (scripts >= 30 && phase === 1) unlockPhase2();
+
+    update();
+}, 1000);
+
+// INIT
+log("Système Cord BOT initialisé.");
+log("RAM disponible.");
+log("En attente de commandes...");
+update();
+</script>
+
+</body>
+</html>
+
